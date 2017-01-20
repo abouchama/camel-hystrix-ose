@@ -1,5 +1,7 @@
 # Hystrix Example
 
+This example is based on [camel-example-hystrix](https://github.com/apache/camel/tree/master/examples/camel-example-hystrix)
+
 ### Introduction
 
 This example shows how to use Camel with Hystrix EIP as circuit breaker in Camel routes
