@@ -1,0 +1,35 @@
+#spec:
+#  template:
+#    spec:
+#      containers:
+#        -
+#          resources:
+#            requests:
+#              cpu: "0.2"
+#              memory: 256Mi
+#            limits:
+#              cpu: "1.0"
+#              memory: 256Mi
+
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        -
+          resources:
+            requests:
+              cpu: "0.2"
+              memory: 256Mi
+            limits:
+              cpu: "1.0"
+              memory: 256Mi
+          env:
+          - name: CAMEL_FROM
+            value: "timer:trigger?period=1s"
+          - name: CAMEL_LOG_MSG
+            value: "Client request: ${body}"
+          - name: CAMEL_HYSTRIX_URL
+            value: "http://camel-example-hystrix-se-hystrix.192.168.42.111.xip.io/service1"
+          - name: CAMEL_FALLBACK_URL
+            value: "http://camel-example-hystrix-se-hystrix.192.168.42.111.xip.io/service2"

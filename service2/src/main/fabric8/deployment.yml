@@ -1,0 +1,35 @@
+#spec:
+#  template:
+#    spec:
+#      containers:
+#        -
+#          resources:
+#            requests:
+#              cpu: "0.2"
+#              memory: 256Mi
+#            limits:
+#              cpu: "1.0"
+#              memory: 256Mi
+
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        -
+          resources:
+            requests:
+              cpu: "0.2"
+              memory: 256Mi
+            limits:
+              cpu: "1.0"
+              memory: 256Mi
+          env:
+          - name: CAMEL_ROUTE_ID
+            value: "service2"
+          - name: CAMEL_FROM
+            value: "jetty:http://0.0.0.0:{{service.port}}/service2"
+          - name: CAMEL_LOG_MSG
+            value: "Service2 response: ${body}"
+          - name: CAMEL_TRANSFORM
+            value: "Service2-${body}"

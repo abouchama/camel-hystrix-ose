@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	  <parent>
+	    <groupId>org.apache.camel</groupId>
+	    <artifactId>camel-hystrix-ose</artifactId>
+	    <version>2.18.1</version>
+	  </parent>
+
+	<artifactId>hystrix-dashboard</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<name>Netflix Hystrix Dashboard</name>
+
+	<properties>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<docker.group.name>hystrix-dashboard</docker.group.name>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>projectodd-snapshots</id>
+			<name>Project:odd Snapshots from CI</name>
+			<url>https://repository-projectodd.forge.cloudbees.com/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jboss-public-repository-group</id>
+			<name>JBoss Public Repository Group</name>
+			<url>http://repository.jboss.org/nexus/content/groups/public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>projectodd-snapshots</id>
+			<name>Project:odd Snapshots from CI</name>
+			<url>https://repository-projectodd.forge.cloudbees.com/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.netflix.hystrix</groupId>
+			<artifactId>hystrix-dashboard</artifactId>
+			<version>1.5.1</version>
+			<type>war</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.14.1</version>
+				<configuration>
+					<images>
+						<image>
+							<name>${docker.group.name}/${project.artifactId}:${project.version}</name>
+							<build>
+								<from>tomcat:7-jre8</from>
+								<tags>
+									<tag>latest</tag>
+									<tag>${project.version}</tag>
+								</tags>
+								<ports>
+									<port>8080</port>
+								</ports>
+								<assembly>
+									<basedir>/usr/local</basedir>
+									<inline>
+										<dependencySets>
+											<dependencySet>
+												<outputDirectory>tomcat/webapps/</outputDirectory>
+												<includes>
+													<include>com.netflix.hystrix:hystrix-dashboard</include>
+												</includes>
+												<outputFileNameMapping>${project.artifactId}.${project.packaging}</outputFileNameMapping>
+											</dependencySet>
+										</dependencySets>
+									</inline>
+								</assembly>
+								<runCmds>
+									<runCmd>cd /usr/local/tomcat/webapps &amp;&amp; rm -rf ROOT &amp;&amp; mv hystrix-dashboard.war ROOT.war</runCmd>
+								</runCmds>
+							</build>
+							<run>
+								<ports>
+									<port>http.port:8080</port>
+								</ports>
+							</run>
+						</image>
+					</images>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
