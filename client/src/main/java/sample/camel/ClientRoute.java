@@ -26,16 +26,26 @@ public class ClientRoute extends RouteBuilder {
     public void configure() {
         // you can configure the route rule with Java DSL here
         from("{{env:CAMEL_FROM}}").streamCaching()
-            .bean("counterBean")
-            .log("{{env:CAMEL_LOG_MSG}}")
-            .hystrix()
-                .to("{{env:CAMEL_HYSTRIX_URL}}")
-            //.onFallback()
+        .bean("counterBean")
+        .log("{{env:CAMEL_LOG_MSG}}")
+        .hystrix().hystrixConfiguration()
+                .circuitBreakerEnabled(false)
+                .circuitBreakerForceOpen(true)
+                .circuitBreakerRequestVolumeThreshold(20)
+                .fallbackEnabled(true)
+                .circuitBreakerErrorThresholdPercentage(20)
+                .circuitBreakerSleepWindowInMilliseconds(10000)
+                .end()
+        .log(" -- Fallback Before call to srd -- ")
+        .to("{{env:CAMEL_HYSTRIX_URL}}")
+        .onFallback()
+                .log(" -- onFallback call fallback response -- ")
+                .to("{{env:CAMEL_FALLBACK_URL}}")
             // we use a fallback without network that provides a repsonse message immediately
             //    .transform().simple("Fallback ${body}")
-            .onFallbackViaNetwork()
+            //.onFallbackViaNetwork()
                 // we use fallback via network where we call a 2nd service
-                .to("{{env:CAMEL_FALLBACK_URL}}")
+                //.to("{{env:CAMEL_FALLBACK_URL}}")
             .end()
             .log("{{env:CAMEL_LOG_MSG}}");
     }

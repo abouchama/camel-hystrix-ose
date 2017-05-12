@@ -29,6 +29,7 @@
 
   <properties>
     <spring.boot-version>${spring-boot-version}</spring.boot-version>
+    <spring-cloud-version>1.2.3.RELEASE</spring-cloud-version>
   </properties>
 
   <!-- import Spring-Boot and Camel BOM -->
@@ -57,6 +58,13 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- spring-boot hystrix -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-hystrix</artifactId>
+      <version>${spring-cloud-version}</version>
     </dependency>
 
     <!-- camel -->

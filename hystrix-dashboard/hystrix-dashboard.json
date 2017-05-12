@@ -1,0 +1,112 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "annotations": {
+      "iconClass": "icon-jboss",
+      "description": "hystrix-dashboard",
+      "tags": "xpaas,netflix",
+      "version": "1.3.0"
+    },
+    "name": "hystrix-dashboard"
+  },
+  "labels": {
+    "template": "hystrix-dashboard",
+    "xpaas": "1.3.0"
+  },
+  "objects": [
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "spec": {
+        "ports": [
+          {
+            "port": 8080,
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "deploymentConfig": "hystrix-dashboard"
+        }
+      },
+      "metadata": {
+        "name": "hystrix-dashboard",
+        "labels": {
+          "application": "hystrix-dashboard"
+        },
+        "annotations": {
+          "description": "Netflix Hystrix Dashboard"
+        }
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "id": "hystrix-dashboard",
+      "metadata": {
+        "name": "hystrix-dashboard",
+        "labels": {
+          "application": "hystrix-dashboard"
+        },
+        "annotations": {
+          "description": "Route for Hystrix Dashboard."
+        }
+      },
+      "spec": {
+        "to": {
+          "name": "hystrix-dashboard"
+        }
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "hystrix-dashboard",
+        "labels": {
+          "application": "hystrix-dashboard"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Recreate",
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "deploymentConfig": "hystrix-dashboard"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "name": "hystrix-dashboard",
+              "deploymentConfig": "hystrix-dashboard",
+              "application": "hystrix-dashboard"
+            }
+          },
+          "spec": {
+            "terminationGracePeriodSeconds": 120,
+            "containers": [
+              {
+                "name": "hystrix-dashboard",
+                "image": "hystrix-dashboard/hystrix-dashboard:1.0.0-SNAPSHOT",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
+                ],
+                "imagePullPolicy": "IfNotPresent"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
