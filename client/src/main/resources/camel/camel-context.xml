@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd"-->
+
+    <!-- You could also define a traditional camel context here -->
+    <!--camelContext id="camel" xmlns="http://camel.apache.org/schema/spring"-->
+
+
+    <routes xmlns="http://camel.apache.org/schema/spring">
+
+        <route id="rest-getPersonId" streamCache="true">
+            <!--from uri="direct:getPersonId"/>
+            <log message="This request is handled by this POD: {{env:HOSTNAME}}"/>
+            <setBody>
+                <simple>Hey ${headers.personId}, ZDD with OSE | POD : {{env:HOSTNAME}} \n</simple>
+            </setBody-->
+
+            <from uri="timer://foo?fixedRate=true&amp;period=60000"/>
+            <!--to uri="counterBean"/-->
+            <doTry>
+            <log message="1. Fallback Before Hystrix" loggingLevel="ERROR"  />
+            <hystrix>
+                <hystrixConfiguration
+                        circuitBreakerEnabled="false"
+                        circuitBreakerForceOpen="true"
+                        circuitBreakerRequestVolumeThreshold="20"
+                        fallbackEnabled="true"
+                        circuitBreakerErrorThresholdPercentage="20"
+                        circuitBreakerSleepWindowInMilliseconds="10000"/>
+
+                <!--to uri="SystemReferenceDataServiceV1Endpoint" /-->
+                <to uri="{{env:CAMEL_HYSTRIX_URL}}"/>
+                <log message="2. Call Hystrix Service 1" loggingLevel="ERROR"  />
+                <onFallback>
+                    <log message="3. onFallback triggered" loggingLevel="ERROR" />
+                    <!--bean method="fallbackResponse" ref="fallbackResponseEnricher"/-->
+                    <to uri="{{env:CAMEL_FALLBACK_URL}}"/>
+                </onFallback>
+            </hystrix>
+            <log message="4. afterOnFallback" loggingLevel="ERROR" />
+            <doCatch>
+                <exception>java.lang.Exception</exception>
+                <log message="5. do catch exception of Fallback" loggingLevel="ERROR" />
+            </doCatch>
+            <doFinally>
+                <log message="6. afterOnFallback in finally" loggingLevel="ERROR"/>
+            </doFinally>
+        </doTry>
+        </route>
+
+</routes>
+
+    <!--bean id="counterBean" class="sample.camel.CounterBean"/-->
+<!--
+/beans-->

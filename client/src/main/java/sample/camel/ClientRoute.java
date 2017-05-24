@@ -25,11 +25,12 @@ public class ClientRoute extends RouteBuilder {
     @Override
     public void configure() {
         // you can configure the route rule with Java DSL here
+        /**
         from("{{env:CAMEL_FROM}}").streamCaching()
         .bean("counterBean")
         .log("{{env:CAMEL_LOG_MSG}}")
         .hystrix().hystrixConfiguration()
-                .circuitBreakerEnabled(false)
+                .circuitBreakerEnabled(true)
                 .circuitBreakerForceOpen(true)
                 .circuitBreakerRequestVolumeThreshold(20)
                 .fallbackEnabled(true)
@@ -47,7 +48,7 @@ public class ClientRoute extends RouteBuilder {
                 // we use fallback via network where we call a 2nd service
                 //.to("{{env:CAMEL_FALLBACK_URL}}")
             .end()
-            .log("{{env:CAMEL_LOG_MSG}}");
+            .log("{{env:CAMEL_LOG_MSG}}");*/
     }
 
 }

@@ -17,8 +17,8 @@ spec:
           - name: CAMEL_LOG_MSG
             value: "Client request: ${body}"
           - name: CAMEL_HYSTRIX_URL
-            value: "http://camel-hystrix-service1-hystrix.192.168.42.126.xip.io/service1"
+            value: "http://camel-hystrix-service1-hystrix.192.168.42.90.xip.io/service1"
           - name: CAMEL_FALLBACK_URL
-            value: "http://camel-hystrix-service2-hystrix.192.168.42.126.xip.io/service2"
+            value: "http://camel-hystrix-service2-hystrix.192.168.42.90.xip.io/service2"
           - name: CAMEL_CIRCUIT_BREAKER_ENABLED
             value: "true"
